@@ -17,6 +17,7 @@ namespace hangman
             Console.Clear();
             Console.WriteLine("");
             Console.WriteLine(" " + ChangeUnderscore(index));
+            Console.WriteLine("Hint: " + giveHints(index));
             Console.WriteLine("#################################################      Current Topic - Countries");
             string input = Console.ReadLine();
             Console.WriteLine("");
@@ -34,6 +35,41 @@ namespace hangman
 
 
 
+        }
+        static string giveHints(int index)
+        {
+            string hint = "";
+            switch (index)
+            {
+                case 0:
+                    hint = "This country is from the continent Oceania, and starts with a";
+                    break;
+                case 1:
+                    hint = "This country overlaps into 2 continents.";
+                    break;
+                case 2:
+                    hint = "This country is located in central Europe. They are known for their sausages and beer";
+                    break;
+                case 3:
+                    hint = "This country is filled with pyramids";
+                    break;
+                case 4:
+                    hint = "...holy land of mecca";
+                    break;
+                case 5:
+                    hint = "Known for their double decker red buses";
+                    break;
+                case 6:
+                    hint = "At the bottom of the African continent";
+                    break;
+                case 7:
+                    hint = "Biggest country in South America";
+                    break;
+                case 8:
+                    hint = "Their ancient ancestry was Incan";
+                    break;
+            }
+        return hint;    
         }
         static string ChangeUnderscore(int index)
         {
