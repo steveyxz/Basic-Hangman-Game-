@@ -1,112 +1,146 @@
 ﻿using System;
+using System.Collections;
+using System.IO;
+using System.Text;
 
-namespace hangman
+namespace Hangman
 {
     class Program
     {
+
         static void Main(string[] args)
         {
-            string[] possibleWords = { "australia", "russia", "germany", "egypt", "saudi arabia", "united kingdom", "south africa", "brazil", "peru" };
-            Random rand = new Random();
-            int index = rand.Next(possibleWords.Length);
-            string randomWord = $"{possibleWords[index]}";
-            char[] charArr = randomWord.ToCharArray();
-
-            Console.WriteLine("Playing hangman, press any key and enter to continue...");
-            Console.ReadLine();
-            Console.Clear();
-            Console.WriteLine("");
-            Console.WriteLine(" " + ChangeUnderscore(index));
-            Console.WriteLine("Hint: " + giveHints(index));
-            Console.WriteLine("#################################################      Current Topic - Countries");
-            string input = Console.ReadLine();
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-          
-            Console.ReadLine();
-            Console.WriteLine($"The answer is {possibleWords[index]}");
-            Console.ReadLine();
-
-
-
-
-        }
-        static string giveHints(int index)
-        {
-            string hint = "";
-            switch (index)
+            startGame(10);
+            while (true)
             {
-                case 0:
-                    hint = "This country is from the continent Oceania, and starts with a";
-                    break;
-                case 1:
-                    hint = "This country overlaps into 2 continents.";
-                    break;
-                case 2:
-                    hint = "This country is located in central Europe. They are known for their sausages and beer";
-                    break;
-                case 3:
-                    hint = "This country is filled with pyramids";
-                    break;
-                case 4:
-                    hint = "...holy land of mecca";
-                    break;
-                case 5:
-                    hint = "Known for their double decker red buses";
-                    break;
-                case 6:
-                    hint = "At the bottom of the African continent";
-                    break;
-                case 7:
-                    hint = "Biggest country in South America";
-                    break;
-                case 8:
-                    hint = "Their ancient ancestry was Incan";
-                    break;
-            }
-        return hint;    
-        }
-        static string ChangeUnderscore(int index)
-        {
-            string aCountry = "";
-
-                switch (index)
+                Console.Write("Do you want to play again? (y/n) ");
+                string inp = Console.ReadLine();
+                if (inp == "n" || inp == "no")
                 {
-                    case 0:
-                        aCountry = "_ _ _ _ _ _ _ _ _";
-                        break;
-                    case 1:
-                    aCountry = "_ _ _ _ _ _";
-                        break;
-                case 2:
-                    aCountry = "_ _ _ _ _ _ _";
+                    Console.WriteLine("Thanks for playing! ");
                     break;
-                case 3:
-                    aCountry = "_ _ _ _ _";
-                    break;
-                case 4:
-                    aCountry = "_ _ _ _ _   _ _ _ _ _ _";
-                    break;
-                case 5:
-                    aCountry = "_ _ _ _ _ _   _ _ _ _ _ _ _";
-                    break;
-                case 6:
-                    aCountry = "_ _ _ _ _   _ _ _ _ _ _";
-                    break;
-                case 7:
-                    aCountry = "_ _ _ _ _ _";
-                        break;
-                case 8:
-                    aCountry = "_ _ _ _";
-                        break;
+                }
+                else
+                {
+                    startGame(10);
+                }
             }
-            return aCountry;
         }
+
+
+        private static void startGame(int guesses)
+        {
+            Random r = new Random();
+            //Read the words
+            string[] words = Properties.Resources.words.Split("\n");
+            //Word format is [word clue] where word will have _ instead of spaces
+            string line = words[r.Next(words.Length)];
+            String[] split = line.Split(" ");
+            string word = split[0].Replace('_', ' ');
+            string clue = "";
+            int count = 0;
+            foreach (string s in split)
+            {
+                if (count != 0)
+                {
+                    clue += s;
+                    clue += " ";
+                }
+                count++;
+            }
+            string currentGuess = "";
+            foreach (char c in word)
+            {
+                if (c == ' ')
+                {
+                    currentGuess += ' ';
+                }
+                else if (char.IsLetter(c))
+                {
+                    currentGuess += '_';
+                }
+            }
+            int guessesRemaining = guesses;
+            StringBuilder guessed = new StringBuilder();
+            Console.WriteLine("Hangman started! " + currentGuess);
+            while (guessesRemaining > 0)
+            {
+                Console.Write("Enter a word or a letter: ");
+                string guess = Console.ReadLine();
+                if (guess.Length == 1)
+                {
+                    //Guessed a character
+                    if (char.IsLetter(guess[0]))
+                    {
+                        if (guessed.ToString().IndexOf(guess[0]) != -1)
+                        {
+                            Console.WriteLine("You have already guess that character!");
+                            continue;
+                        }
+                        if (word.Contains(guess[0]))
+                        {
+                            guessed.Append(guess[0]);
+                            count = 0;
+                            StringBuilder sb = new StringBuilder(currentGuess);
+                            foreach (char c in word)
+                            {
+                                if (c == guess[0])
+                                {
+                                    sb[count] = guess[0];
+                                }
+                                count++;
+                            }
+                            currentGuess = sb.ToString();
+                            if (currentGuess != word)
+                            {
+                                Console.WriteLine("Correct guess! " + currentGuess);
+                                continue;
+                            }
+                            else
+                            {
+                                win(guessesRemaining, word);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Letter is not in the word! " + currentGuess);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid character provided!");
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (guess.Length < 1)
+                    {
+                        Console.WriteLine("Input cannot be empty!");
+                        continue;
+                    }
+                    if (guess == word)
+                    {
+                        win(guessesRemaining, word);
+                        return;
+                    }
+                    Console.WriteLine("Incorrect guess! " + currentGuess);
+                }
+                guessesRemaining--;
+                if (guessesRemaining == Math.Floor(guesses / 2d))
+                {
+                    Console.WriteLine("Here's a clue! " + clue);
+                }
+            }
+            Console.WriteLine("You lose! The correct word was " + word);
+        }
+        private static void win(int remainingGuesses, string word)
+        {
+            Console.WriteLine("You win with " + remainingGuesses + " remaining guesses! The word is " + word);
+        }
+
+
+
     }
-        
 }

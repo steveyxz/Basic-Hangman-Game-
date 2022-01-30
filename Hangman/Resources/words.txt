@@ -1,0 +1,9 @@
+﻿australia This country is from the continent Oceania, and starts with a
+russia This country overlaps into 2 continents.
+germany This country is located in central Europe. They are known for their sausages and beer
+egypt This country is filled with pyramids
+saudi_arabia ...holy land of mecca
+united_kingdom Known for their double decker red buses
+south_africa At the bottom of the African continent
+brazil Biggest country in South America
+peru Their ancient ancestry was Incan
